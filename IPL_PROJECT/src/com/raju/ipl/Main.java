@@ -86,12 +86,41 @@ public class Main {
     public static HashMap<String, Integer> noOfMatchesPlayedPerYearOfAllTheYears = new HashMap<>();
     public static HashMap<String, Integer> noOfMatchesWonOfAllTeamsOverAllTheYears = new HashMap<>();
 
+    public static HashMap<String , Integer> extraRunsConcededPerTeamIn2016 = new HashMap<>();
+
     public static void main(String[] args) {
         List<Match> matches = getMatchesData();
         List<Deliveries> deliveries = getDeliveriesData();
 
         findNumberOfMatchesPlayedPerYearOfAllTheYears(matches);
         findNumberOfMatchesWonPerTeamInAllSeasons(matches);
+        findExtraRunsConcededPerTeamIn2016(matches,deliveries);
+    }
+
+    private static void findExtraRunsConcededPerTeamIn2016(List<Match> matches, List<Deliveries> deliveries) {
+        List <String> matchIdsIn2016 = new ArrayList<>();
+
+        for(Match obj : matches){
+            if(obj.getSeason().equals("2016")){
+                matchIdsIn2016.add(obj.getId());
+            }
+        }
+
+        for(Deliveries obj : deliveries){
+            for(String season : matchIdsIn2016){
+                if(season.equals(obj.getMatchId())){
+                    if(extraRunsConcededPerTeamIn2016.containsKey(obj.getBattingTeam())){
+                        extraRunsConcededPerTeamIn2016.put(obj.getBattingTeam(),extraRunsConcededPerTeamIn2016.get(obj.getBattingTeam())+Integer.parseInt(obj.getExtraRuns()));
+                    }
+                    else {
+                        extraRunsConcededPerTeamIn2016.put(obj.getBattingTeam(), Integer.parseInt(obj.getExtraRuns()));
+                    }
+                }
+            }
+        }
+
+        System.out.println("For the year 2016 get the extra runs conceded per team :");
+        System.out.println(extraRunsConcededPerTeamIn2016);
     }
 
     private static void findNumberOfMatchesWonPerTeamInAllSeasons(List<Match> matches) {
@@ -176,6 +205,27 @@ public class Main {
                 }
                 String[] data = line.split(",");
                 Deliveries obj = new Deliveries();
+                obj.setMatchId(data[MATCH_ID]);
+                obj.setInning(data[INNING]);
+                obj.setBattingTeam(data[BATTING_TEAM]);
+                obj.setBowlingTeam(data[BOWLING_TEAM]);
+                //obj.setOver(data[OVER]);
+                //obj.setBall(data[BALL]);
+                obj.setBatsman(data[BATSMAN]);
+                //obj.setNonStriker(data[NON_STRIKER]);
+                obj.setBowler(data[BOWLER]);
+                //obj.setIsSuperOver(data[IS_SUPER_OVER]);
+                //obj.setWideRuns(data[WIDE_RUNS]);
+                //obj.setByeRuns(data[BYE_RUNS]);
+                //obj.setLegByeRuns(data[LEGBYE_RUNS]);
+                //obj.setNoBallRuns(data[NOBALL_RUNS]);
+                //obj.setPenaltyRuns(data[PENALTY_RUNS]);
+                obj.setBatsmanRuns(data[BATSMAN_RUNS]);
+                obj.setExtraRuns(data[EXTRA_RUNS]);
+                obj.setTotalRuns(data[TOTAL_RUNS]);
+                //obj.setPlayerDismissed(data[PLAYER_DISMISSED]);
+                //obj.setDismissalKind(data[DISMISSAL_KIND]);
+                //obj.setFielder(data[FIELDER]);
                 deliveries.add(obj);
             }
         } catch (Exception e) {
