@@ -1,5 +1,7 @@
 package com.raju.ipl;
 
+import jdk.jshell.JShell;
+
 import java.io.File;
 import java.util.*;
 
@@ -86,7 +88,7 @@ public class Main {
     public static HashMap<String, Integer> noOfMatchesPlayedPerYearOfAllTheYears = new HashMap<>();
     public static HashMap<String, Integer> noOfMatchesWonOfAllTeamsOverAllTheYears = new HashMap<>();
 
-    public static HashMap<String , Integer> extraRunsConcededPerTeamIn2016 = new HashMap<>();
+    public static HashMap<String, Integer> extraRunsConcededPerTeamIn2016 = new HashMap<>();
 
     public static void main(String[] args) {
         List<Match> matches = getMatchesData();
@@ -94,31 +96,95 @@ public class Main {
 
         findNumberOfMatchesPlayedPerYearOfAllTheYears(matches);
         findNumberOfMatchesWonPerTeamInAllSeasons(matches);
-        findExtraRunsConcededPerTeamIn2016(matches,deliveries);
+        findExtraRunsConcededPerTeamIn2016(matches, deliveries);
+        findMostEconomicalBowlerIn2015(matches, deliveries);
+    }
+
+    private static void findMostEconomicalBowlerIn2015(List<Match> matches, List<Deliveries> deliveries) {
+        List<String> matchIdsIn2015 = new ArrayList<>();
+        HashMap<String, Integer> noOfBallsByBowler = new HashMap<>();
+        HashMap<String, Integer> totalRunsByBowler = new HashMap<>();
+
+        for (Match obj : matches) {
+            if (obj.getSeason().equals("2015")) {
+                matchIdsIn2015.add(obj.getId());
+            }
+        }
+
+        for (Deliveries obj : deliveries) {
+            for (String matchId : matchIdsIn2015) {
+                if (matchId.equals(obj.getMatchId())) {
+                    if (noOfBallsByBowler.containsKey(obj.getBowler())) {
+                        noOfBallsByBowler.put(obj.getBowler(), noOfBallsByBowler.get(obj.getBowler()) + 1);
+                    } else {
+                        noOfBallsByBowler.put(obj.getBowler(), 1);
+                    }
+                }
+            }
+        }
+
+        for (Deliveries obj : deliveries) {
+            for (String matchId : matchIdsIn2015) {
+                if (matchId.equals(obj.getMatchId())) {
+                    if (totalRunsByBowler.containsKey(obj.getBowler())) {
+                        totalRunsByBowler.put(obj.getBowler(), totalRunsByBowler.get(obj.getBowler()) + Integer.valueOf(obj.getTotalRuns()));
+                    } else {
+                        totalRunsByBowler.put(obj.getBowler(), Integer.parseInt(obj.getTotalRuns()));
+                    }
+                }
+            }
+        }
+
+        HashMap<String, Integer> noOfOversByBowler = new HashMap<>();
+
+        for (String key : noOfBallsByBowler.keySet()) {
+            noOfOversByBowler.put(key, noOfBallsByBowler.get(key) / 6);
+        }
+
+        HashMap<String, Double> economyOfTheBowlers = new HashMap<>();
+
+        for (String key : noOfOversByBowler.keySet()) {
+            economyOfTheBowlers.put(key, ((double) totalRunsByBowler.get(key) / (double) noOfOversByBowler.get(key)));
+        }
+
+        List<Map.Entry<String, Double>> economyOfTheBowlersList = new ArrayList<Map.Entry<String, Double>>();
+
+        economyOfTheBowlersList.addAll(economyOfTheBowlers.entrySet());
+
+        Collections.sort(economyOfTheBowlersList, new Comparator<Map.Entry<String, Double>>() {
+            @Override
+            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+
+        System.out.println();
+        System.out.println("For the year 2015 get the top economical bowlers :");
+        System.out.println(economyOfTheBowlersList);
     }
 
     private static void findExtraRunsConcededPerTeamIn2016(List<Match> matches, List<Deliveries> deliveries) {
-        List <String> matchIdsIn2016 = new ArrayList<>();
+        List<String> matchIdsIn2016 = new ArrayList<>();
 
-        for(Match obj : matches){
-            if(obj.getSeason().equals("2016")){
+        for (Match obj : matches) {
+            if (obj.getSeason().equals("2016")) {
                 matchIdsIn2016.add(obj.getId());
             }
         }
 
-        for(Deliveries obj : deliveries){
-            for(String season : matchIdsIn2016){
-                if(season.equals(obj.getMatchId())){
-                    if(extraRunsConcededPerTeamIn2016.containsKey(obj.getBattingTeam())){
-                        extraRunsConcededPerTeamIn2016.put(obj.getBattingTeam(),extraRunsConcededPerTeamIn2016.get(obj.getBattingTeam())+Integer.parseInt(obj.getExtraRuns()));
-                    }
-                    else {
+        for (Deliveries obj : deliveries) {
+            for (String matchId : matchIdsIn2016) {
+                if (matchId.equals(obj.getMatchId())) {
+                    if (extraRunsConcededPerTeamIn2016.containsKey(obj.getBattingTeam())) {
+                        extraRunsConcededPerTeamIn2016.put(obj.getBattingTeam(), extraRunsConcededPerTeamIn2016.get(obj.getBattingTeam()) + Integer.parseInt(obj.getExtraRuns()));
+                    } else {
                         extraRunsConcededPerTeamIn2016.put(obj.getBattingTeam(), Integer.parseInt(obj.getExtraRuns()));
                     }
                 }
             }
         }
 
+        System.out.println();
         System.out.println("For the year 2016 get the extra runs conceded per team :");
         System.out.println(extraRunsConcededPerTeamIn2016);
     }
@@ -126,14 +192,16 @@ public class Main {
     private static void findNumberOfMatchesWonPerTeamInAllSeasons(List<Match> matches) {
         for (Match obj : matches) {
             if (noOfMatchesWonOfAllTeamsOverAllTheYears.containsKey(obj.getWinner())) {
-                noOfMatchesWonOfAllTeamsOverAllTheYears.put(obj.getWinner(),noOfMatchesWonOfAllTeamsOverAllTheYears.get(obj.getWinner())+1);
+                noOfMatchesWonOfAllTeamsOverAllTheYears.put(obj.getWinner(), noOfMatchesWonOfAllTeamsOverAllTheYears.get(obj.getWinner()) + 1);
             } else {
-                if(obj.getWinner().equals("")){
+                if (obj.getWinner().equals("")) {
                     continue;
                 }
                 noOfMatchesWonOfAllTeamsOverAllTheYears.put(obj.getWinner(), 1);
             }
         }
+
+        System.out.println();
         System.out.println("Number of matches won of all teams over all the years of IPL :");
         System.out.println(noOfMatchesWonOfAllTeamsOverAllTheYears);
     }
@@ -146,6 +214,8 @@ public class Main {
                 noOfMatchesPlayedPerYearOfAllTheYears.put(obj.getSeason(), 1);
             }
         }
+
+        System.out.println();
         System.out.println("Number of matches played per year of all the years in IPL :");
         System.out.println(noOfMatchesPlayedPerYearOfAllTheYears);
     }
