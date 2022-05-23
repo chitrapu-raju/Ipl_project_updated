@@ -98,6 +98,45 @@ public class Main {
         findNumberOfMatchesWonPerTeamInAllSeasons(matches);
         findExtraRunsConcededPerTeamIn2016(matches, deliveries);
         findMostEconomicalBowlerIn2015(matches, deliveries);
+        findHighestRunScorerInSeason2015(matches,deliveries);
+    }
+
+    private static void findHighestRunScorerInSeason2015(List<Match> matches, List<Deliveries> deliveries) {
+        List<String> matchIdsIn2015 = new ArrayList<>();
+        HashMap<String,Integer> individualBatsmanRunsIn2015 = new HashMap<>();
+
+        for (Match obj : matches) {
+            if (obj.getSeason().equals("2015")) {
+                matchIdsIn2015.add(obj.getId());
+            }
+        }
+
+        for (Deliveries obj : deliveries) {
+            for (String matchId : matchIdsIn2015) {
+                if (matchId.equals(obj.getMatchId())) {
+                    if(individualBatsmanRunsIn2015.containsKey(obj.getBatsman())){
+                        individualBatsmanRunsIn2015.put(obj.getBatsman(),individualBatsmanRunsIn2015.get(obj.getBatsman())+Integer.parseInt(obj.getBatsmanRuns()));
+                    }
+                    else {
+                        individualBatsmanRunsIn2015.put(obj.getBatsman(), Integer.parseInt(obj.getBatsmanRuns()));
+                    }
+                }
+            }
+        }
+
+        List <Map.Entry<String,Integer>> individualBatsmanRunsIn2015List = new ArrayList<Map.Entry<String,Integer>>();
+        individualBatsmanRunsIn2015List.addAll(individualBatsmanRunsIn2015.entrySet());
+
+        Collections.sort(individualBatsmanRunsIn2015List, new Comparator<Map.Entry<String, Integer>>() {
+            @Override
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+
+        System.out.println();
+        System.out.println("Highest Run Scorer In The Year 2015 :");
+        System.out.println(individualBatsmanRunsIn2015List.get(0));
     }
 
     private static void findMostEconomicalBowlerIn2015(List<Match> matches, List<Deliveries> deliveries) {
@@ -303,4 +342,5 @@ public class Main {
         }
         return deliveries;
     }
+
 }
