@@ -98,12 +98,12 @@ public class Main {
         findNumberOfMatchesWonPerTeamInAllSeasons(matches);
         findExtraRunsConcededPerTeamIn2016(matches, deliveries);
         findMostEconomicalBowlerIn2015(matches, deliveries);
-        findHighestRunScorerInSeason2015(matches,deliveries);
+        findHighestRunScorerInSeason2015(matches, deliveries);
     }
 
     private static void findHighestRunScorerInSeason2015(List<Match> matches, List<Deliveries> deliveries) {
         List<String> matchIdsIn2015 = new ArrayList<>();
-        HashMap<String,Integer> individualBatsmanRunsIn2015 = new HashMap<>();
+        HashMap<String, Integer> individualBatsmanRunsIn2015 = new HashMap<>();
 
         for (Match obj : matches) {
             if (obj.getSeason().equals("2015")) {
@@ -112,19 +112,16 @@ public class Main {
         }
 
         for (Deliveries obj : deliveries) {
-            for (String matchId : matchIdsIn2015) {
-                if (matchId.equals(obj.getMatchId())) {
-                    if(individualBatsmanRunsIn2015.containsKey(obj.getBatsman())){
-                        individualBatsmanRunsIn2015.put(obj.getBatsman(),individualBatsmanRunsIn2015.get(obj.getBatsman())+Integer.parseInt(obj.getBatsmanRuns()));
-                    }
-                    else {
+            if(matchIdsIn2015.contains(obj.getMatchId())) {
+                    if (individualBatsmanRunsIn2015.containsKey(obj.getBatsman())) {
+                        individualBatsmanRunsIn2015.put(obj.getBatsman(), individualBatsmanRunsIn2015.get(obj.getBatsman()) + Integer.parseInt(obj.getBatsmanRuns()));
+                    } else {
                         individualBatsmanRunsIn2015.put(obj.getBatsman(), Integer.parseInt(obj.getBatsmanRuns()));
                     }
-                }
             }
         }
 
-        List <Map.Entry<String,Integer>> individualBatsmanRunsIn2015List = new ArrayList<Map.Entry<String,Integer>>();
+        List<Map.Entry<String, Integer>> individualBatsmanRunsIn2015List = new ArrayList<Map.Entry<String, Integer>>();
         individualBatsmanRunsIn2015List.addAll(individualBatsmanRunsIn2015.entrySet());
 
         Collections.sort(individualBatsmanRunsIn2015List, new Comparator<Map.Entry<String, Integer>>() {
@@ -151,26 +148,22 @@ public class Main {
         }
 
         for (Deliveries obj : deliveries) {
-            for (String matchId : matchIdsIn2015) {
-                if (matchId.equals(obj.getMatchId())) {
+            if(matchIdsIn2015.contains(obj.getMatchId())) {
                     if (noOfBallsByBowler.containsKey(obj.getBowler())) {
                         noOfBallsByBowler.put(obj.getBowler(), noOfBallsByBowler.get(obj.getBowler()) + 1);
                     } else {
                         noOfBallsByBowler.put(obj.getBowler(), 1);
                     }
-                }
             }
         }
 
         for (Deliveries obj : deliveries) {
-            for (String matchId : matchIdsIn2015) {
-                if (matchId.equals(obj.getMatchId())) {
+            if(matchIdsIn2015.contains(obj.getMatchId())) {
                     if (totalRunsByBowler.containsKey(obj.getBowler())) {
-                        totalRunsByBowler.put(obj.getBowler(), totalRunsByBowler.get(obj.getBowler()) + Integer.valueOf(obj.getTotalRuns()));
+                        totalRunsByBowler.put(obj.getBowler(), totalRunsByBowler.get(obj.getBowler()) + Integer.parseInt(obj.getTotalRuns()));
                     } else {
                         totalRunsByBowler.put(obj.getBowler(), Integer.parseInt(obj.getTotalRuns()));
                     }
-                }
             }
         }
 
@@ -212,14 +205,12 @@ public class Main {
         }
 
         for (Deliveries obj : deliveries) {
-            for (String matchId : matchIdsIn2016) {
-                if (matchId.equals(obj.getMatchId())) {
+            if(matchIdsIn2016.contains(obj.getMatchId())) {
                     if (extraRunsConcededPerTeamIn2016.containsKey(obj.getBattingTeam())) {
                         extraRunsConcededPerTeamIn2016.put(obj.getBattingTeam(), extraRunsConcededPerTeamIn2016.get(obj.getBattingTeam()) + Integer.parseInt(obj.getExtraRuns()));
                     } else {
                         extraRunsConcededPerTeamIn2016.put(obj.getBattingTeam(), Integer.parseInt(obj.getExtraRuns()));
                     }
-                }
             }
         }
 
@@ -291,7 +282,7 @@ public class Main {
 //                obj.setVenue(data[VENUE]);
 //                obj.setUmpire1(data[UMPIRE1]);
 //                obj.setUmpire2(data[UMPIRE2]);
-                //               obj.setUmpire2(data[UMPIRE3]);
+//                obj.setUmpire2(data[UMPIRE3]);
                 matches.add(obj);
             }
         } catch (Exception e) {
